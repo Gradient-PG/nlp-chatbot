@@ -1,13 +1,13 @@
 import transformers
 
 
-class TranslatePLToEN:
+class TranslatorPLToEN:
     def __init__(self):
-        # Initialize pipeline
+        # Initialize pipeline with translation model
         self.model_checkpoint = "Helsinki-NLP/opus-mt-pl-en"
-        self.translatorPLtoEN = transformers.pipeline("translation", model=self.model_checkpoint)
+        self.translator = transformers.pipeline("translation", model=self.model_checkpoint)
 
     def translate(self, text):
-        res = self.translatorPLtoEN(text)
+        response = self.translator(text)
         # Return string value
-        return res[0]["translation_text"]
+        return response[0]["translation_text"]
