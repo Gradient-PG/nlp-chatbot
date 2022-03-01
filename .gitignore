@@ -1,1 +1,4 @@
 *.pyc
+*logs
+*model-store
+*DialoGPT-medium
