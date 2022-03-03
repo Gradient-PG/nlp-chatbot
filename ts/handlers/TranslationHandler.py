@@ -54,33 +54,32 @@ class TranslationHandler(BaseHandler, ABC):
         logger.info("Transformer model from path %s loaded successfully", model_dir)
         self.initialized = True
 
-    def preprocess(self, requests):
-        input_batch = None
-        texts_batch = []
-        for idx, data in enumerate(requests):
-            data = data["body"]
-            input_text = data["text"]
-            src_lang = data["from"]
-            tgt_lang = data["to"]
-            if isinstance(input_text, (bytes, bytearray)):
-                input_text = input_text.decode("utf-8")
-                src_lang = src_lang.decode("utf-8")
-                tgt_lang = tgt_lang.decode("utf-8")
-            texts_batch.append(f"translate {self._LANG_MAP[src_lang]} to {self._LANG_MAP[tgt_lang]}: {input_text}")
-        inputs = self.tokenizer(texts_batch, return_tensors="pt")
-        input_batch = inputs["input_ids"].to(self.device)
-        return input_batch
+    def preprocess(self, data):
+        logger.info(f"Data is of type {type(data)}, data[0]: {data[0]}")
+        text = data[0].get("data")
+        if text is None:
+            text = data[0].get("body")
+        sentences = text.decode('utf-8')
+        logger.info("Received text: '%s'", sentences)
+
+        inputs = self.tokenizer.encode(
+            sentences + self.tokenizer.eos_token,
+            return_tensors="pt"
+        )
+        logger.info(f"Encoded input: {inputs}")
+        return inputs
 
     def inference(self, input_batch):
         generations = self.model.generate(input_batch)
         generations = self.tokenizer.batch_decode(generations, skip_special_tokens=True)
         return generations
 
-    def postprocess(self, inference_output):
-        return [{"text": text} for text in inference_output]
+    def postprocess(self, data):
+        return [data]
 
     def handle(self, data, context):
         return super().handle(data, context)
+
 
 if __name__ == '__main__':
     handler = TranslationHandler()
