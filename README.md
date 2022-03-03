@@ -15,13 +15,14 @@ Run:
 ```python
 python transformer_downloader.py
 ```
-With the model downloaded you can create a MAR archive. This example shows how to compress already downloaded model DialoGPT-medium:
+With the model downloaded you can create a MAR archive. First create model-store directory and than you can compress already downloaded model DialoGPT-medium:
 ```bash
-torch-model-archiver --model-name DialoGPT-medium --version 1.0 --serialized-file models/DialoGPT-medium/pytorch_model.bin --handler handlers/conversation_handler.py --extra-files 'models/DialoGPT-medium/config.json,./models/DialoGPT-medium/vocab.json,./models/DialoGPT-medium/tokenizer.json,models/DialoGPT-medium/tokenizer_config.json,models/DialoGPT-medium/special_tokens_map.json'
+mkdir model-store
+torch-model-archiver --model-name DialoGPT-medium --version 1.0 --serialized-file models/DialoGPT-medium/pytorch_model.bin --handler handlers/conversation_handler.py --extra-files 'models/DialoGPT-medium/config.json,./models/DialoGPT-medium/vocab.json,./models/DialoGPT-medium/tokenizer.json,models/DialoGPT-medium/tokenizer_config.json,models/DialoGPT-medium/special_tokens_map.json' --export-path ./model-store -f
+
 ```
 In case of other models you need to supply your own handler and add paths to files needed by your model.
 
-With the model packed you need to create folder model-store and move .mar file to it. After that you can start torchserve.
 ```bash
 torchserve --start --model-store model-store --models DialoGPT-medium=DialoGPT-medium.mar
 ```
@@ -36,3 +37,18 @@ If you want to stop torchserve run:
 ```bash
 torchserve --stop
 ```
+### Workflows
+
+In order to create workflow which runs a few different models you need to create a .war archive. Custom workflows require .yaml config file that states how the models interact.
+
+When you have your configs ready, create wf-store directory:
+```bash
+mkdir wf-store
+```
+Than run:
+```bash
+torch-workflow-archiver --workflow-name wf --spec-file workflow.yaml --handler handlers/workflow_handler.py --export-path wf-store -f
+```
+Torchserve can be now started with command:
+```bash
+torchserve --start --model-store model-store --workflow-store wf-store --ncs
