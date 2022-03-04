@@ -5,7 +5,7 @@ import json
 from abc import ABC
 
 from ts.torch_handler.base_handler import BaseHandler
-from transformers import AutoTokenizer, AutoModel, MarianMTModel
+from transformers import AutoTokenizer, AutoModel, MarianMTModel, MarianTokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class TranslationHandler(BaseHandler, ABC):
             logger.warning("Missing the setup_config.json file.")
         # Loading the model and tokenizer from checkpoint and config files based on the user's choice of mode
         # further setup config can be added.
-        self.tokenizer = AutoTokenizer.from_pretrained(model_dir)
+        self.tokenizer = MarianTokenizer.from_pretrained(model_dir)
         if self.setup_config["save_mode"] == "torchscript":
             self.model = torch.jit.load(model_pt_path)
         elif self.setup_config["save_mode"] == "pretrained":
@@ -63,7 +63,7 @@ class TranslationHandler(BaseHandler, ABC):
         sentences = text.decode('utf-8')
         logger.info("Received text: '%s'", sentences)
 
-        inputs = self.tokenizer([sentences], return_tensors="pt")
+        inputs = self.tokenizer([sentences+self.tokenizer.eos_token], return_tensors="pt")
         logger.info(f"Encoded input: {inputs}")
         return inputs
 
@@ -73,7 +73,9 @@ class TranslationHandler(BaseHandler, ABC):
         # generations = self.tokenizer.batch_decode(generations, skip_special_tokens=True)
         input_batch.to(self.device)
         logging.info(f"Input to model {input_batch}")
-        output = self.model.generate(**input_batch)
+        # output = self.model.generate(**input_batch)
+        output = self.model.generate(input_ids=input_batch['input_ids'], attention_mask=input_batch['attention_mask'])
+
         logging.info(f"Output {output}")
 
         return output
