@@ -5,22 +5,22 @@ import json
 from abc import ABC
 
 from ts.torch_handler.base_handler import BaseHandler
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, AutoModel, MarianMTModel
 
 logger = logging.getLogger(__name__)
 
 
 class TranslationHandler(BaseHandler, ABC):
-    _LANG_MAP = {
-        "pl": "Polish",
-        "pol": "Polish",
-        "en": "English",
-        "eng": "English"
-    }
 
     def __init__(self):
         super(TranslationHandler, self).__init__()
         self.initialized = False
+        self._LANG_MAP = {
+            "pl": "Polish",
+            "pol": "Polish",
+            "en": "English",
+            "eng": "English"
+        }
 
     def initialize(self, ctx):
         self.manifest = ctx.manifest
@@ -33,6 +33,7 @@ class TranslationHandler(BaseHandler, ABC):
             if torch.cuda.is_available()
             else "cpu"
         )
+        # self.device = "cpu"
         # read configs for the mode, model_name, etc. from setup_config.json
         setup_config_path = os.path.join(model_dir, "setup_config.json")
         if os.path.isfile(setup_config_path):
@@ -46,7 +47,7 @@ class TranslationHandler(BaseHandler, ABC):
         if self.setup_config["save_mode"] == "torchscript":
             self.model = torch.jit.load(model_pt_path)
         elif self.setup_config["save_mode"] == "pretrained":
-            self.model = AutoModel.from_pretrained(model_dir)
+            self.model = MarianMTModel.from_pretrained(model_dir)
         else:
             logger.warning("Missing the checkpoint or state_dict.")
         self.model.to(self.device)
@@ -62,17 +63,23 @@ class TranslationHandler(BaseHandler, ABC):
         sentences = text.decode('utf-8')
         logger.info("Received text: '%s'", sentences)
 
-        inputs = self.tokenizer.encode(sentences, return_tensors="pt")
+        inputs = self.tokenizer([sentences], return_tensors="pt")
         logger.info(f"Encoded input: {inputs}")
         return inputs
 
     def inference(self, input_batch):
-        generations = self.model.generate(input_batch)
-        generations = self.tokenizer.batch_decode(generations, skip_special_tokens=True)
-        return generations
+        logger.info(f"input_batch type: {type(input_batch)}")
+        # generations = self.model.generate(input_batch.to(self.device))
+        # generations = self.tokenizer.batch_decode(generations, skip_special_tokens=True)
+        input_batch.to(self.device)
+        logging.info(f"Input to model {input_batch}")
+        output = self.model.generate(**input_batch)
+        logging.info(f"Output {output}")
 
-    def postprocess(self, data):
-        return [data]
+        return output
+
+    def postprocess(self, inference_output):
+        return self.tokenizer.batch_decode(inference_output, skip_special_tokens=True)
 
     def handle(self, data, context):
         return super().handle(data, context)
