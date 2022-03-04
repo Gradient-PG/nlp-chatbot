@@ -62,10 +62,7 @@ class TranslationHandler(BaseHandler, ABC):
         sentences = text.decode('utf-8')
         logger.info("Received text: '%s'", sentences)
 
-        inputs = self.tokenizer.encode(
-            sentences + self.tokenizer.batch_decode,
-            return_tensors="pt"
-        )
+        inputs = self.tokenizer.encode(sentences, return_tensors="pt")
         logger.info(f"Encoded input: {inputs}")
         return inputs
 
