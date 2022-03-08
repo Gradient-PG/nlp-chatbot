@@ -66,3 +66,14 @@ Torchserve can be now started with command:
 ```bash
 torchserve --start --model-store model-store --workflow-store wf-store --ncs
 ```
+### Website skeleton
+Before startup you have to create venv
+```bash
+$ cd chatbot-deployment
+$ python3 -m venv venv
+$ . venv/bin/activate
+```
+And install dependencies
+```bash
+$ (venv) pip install Flask torch
+```
