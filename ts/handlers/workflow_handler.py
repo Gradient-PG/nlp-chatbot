@@ -1,2 +1,2 @@
 def pre_processing(data, context):
-    pass
+    return data, context
