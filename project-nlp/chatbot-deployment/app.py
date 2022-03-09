@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, jsonify
+import requests
 
+def get_response(text):
+    return requests.post("http://127.0.0.1:8080/wfpredict/wf", text).text
 
 
 app = Flask(__name__)
