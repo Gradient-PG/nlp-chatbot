@@ -6,24 +6,24 @@ models:
     max-batch-delay : 5000
     retry-attempts : 3
     timeout-ms : 5000
-    DialoGPT-medium:
-       url : model-store/DialoGPT-medium.mar #local or public URI
-       min-workers: 1   #override the global params
-       max-workers: 1
-       batch-size: 1
+    DialoGPT-small:
+       url : model-store/DialoGPT-small.mar #local or public URI
+      #  min-workers: 1   #override the global params
+      #  max-workers: 1
+      #  batch-size: 1
     Helsinki-NLP:
        url : model-store/Helsinki-NLP.mar
-       min-workers: 1
-       max-workers: 1
-       batch-size: 1
+      #  min-workers: 1
+      #  max-workers: 1
+      #  batch-size: 1
     gsarti:
        url: model-store/gsarti.mar
-       min-workers: 1
-       max-workers: 1
-       batch-size: 1
+      #  min-workers: 1
+      #  max-workers: 1
+      #  batch-size: 1
 
  
 dag:
-  pre_processing : [Helsinki-NLP]
-  Helsinki-NLP: [DialoGPT-medium]
-  DialoGPT-medium : [gsarti]
+#  Helsinki-NLP: [gsarti]
+  Helsinki-NLP: [DialoGPT-small]
+  #DialoGPT-small : [gsarti]

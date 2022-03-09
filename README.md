@@ -19,7 +19,12 @@ python ts/utils/translation_transformer_downloader.py
 With the models downloaded you can create a MAR archive. First create model-store directory and than you can compress already downloaded model DialoGPT-medium:
 ```bash
 mkdir model-store
+```
+```bash
 torch-model-archiver --model-name DialoGPT-medium --version 1.0 --serialized-file models/DialoGPT-medium/pytorch_model.bin --handler handlers/conversation_handler.py --extra-files 'models/DialoGPT-medium/config.json,./models/DialoGPT-medium/vocab.json,./models/DialoGPT-medium/tokenizer.json,models/DialoGPT-medium/tokenizer_config.json,models/DialoGPT-medium/special_tokens_map.json' --export-path ./model-store -f 
+```
+```bash
+torch-model-archiver --model-name DialoGPT-small --version 1.0 --serialized-file models/DialoGPT-small/pytorch_model.bin --handler handlers/conversation_handler.py --extra-files 'models/DialoGPT-small/config.json,./models/DialoGPT-small/vocab.json,./models/DialoGPT-small/tokenizer.json,models/DialoGPT-small/tokenizer_config.json,models/DialoGPT-small/special_tokens_map.json' --export-path ./model-store -f
 ```
 If your model needs some additional requirements at the end of the command add:
 ```bash

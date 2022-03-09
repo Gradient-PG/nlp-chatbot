@@ -1,12 +1,15 @@
+from numpy import dtype
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
 from pathlib import Path
+import torch
 import os
 
 if __name__ == "__main__":
-    modelpath = Path('ts/models/DialoGPT-medium')
-    config = AutoConfig.from_pretrained("microsoft/DialoGPT-medium")
-    model = AutoModelForCausalLM.from_pretrained("microsoft/DialoGPT-medium", config=config)
-    tokenizer = AutoTokenizer.from_pretrained("microsoft/DialoGPT-medium")
+    modelname = "DialoGPT-small"
+    modelpath = Path("ts/models/" + modelname)
+    config = AutoConfig.from_pretrained("microsoft/" + modelname)
+    model = AutoModelForCausalLM.from_pretrained("microsoft/" + modelname, config=config)
+    tokenizer = AutoTokenizer.from_pretrained("microsoft/" + modelname)
     try:
         os.mkdir(modelpath.as_posix())
     except OSError:
@@ -16,3 +19,4 @@ if __name__ == "__main__":
         print (f"Successfully created directory {modelpath.as_posix()} ")
         model.save_pretrained(modelpath.as_posix())
         tokenizer.save_pretrained(modelpath.as_posix())
+        # , dtype=torch.float16

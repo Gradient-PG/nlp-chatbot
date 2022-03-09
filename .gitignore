@@ -1,7 +1,7 @@
 *.pyc
 *logs
 *model-store
-*DialoGPT-medium
+*DialoGPT*
 *wf-store
 *Helsinki-NLP
 *gsarti
