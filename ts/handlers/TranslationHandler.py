@@ -30,7 +30,7 @@ class TranslationHandler(BaseHandler, ABC):
         model_pt_path = os.path.join(model_dir, serialized_file)
         self.device = torch.device(
             "cuda:" + str(properties.get("gpu_id"))
-            if torch.cuda.is_available()
+            if torch.cuda.is_available() and properties.get("gpu_id") is not None
             else "cpu"
         )
         # self.device = "cpu"
