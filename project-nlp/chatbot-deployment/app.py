@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import requests
 
 def get_response(text):
-    return requests.post("http://127.0.0.1:8080/wfpredict/wf", text).text
+    return requests.post("https://localhost:8443/wfpredict/wf", text).text
 
 
 app = Flask(__name__)
@@ -19,5 +19,5 @@ def predict():
     message = {"answer": response}
     return jsonify(message)
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
 

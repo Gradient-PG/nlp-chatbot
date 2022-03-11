@@ -69,7 +69,13 @@ torch-workflow-archiver --workflow-name wf --spec-file workflow.yaml --handler h
 ```
 Torchserve can be now started with command:
 ```bash
-torchserve --start --model-store model-store --workflow-store wf-store --ncs
+torchserve --start --model-store model-store --workflow-store wf-store --ts-config ../config/config.properties --ncs
+```
+```bash
+curl -X POST http://127.0.0.1:8081/workflows?url=wf.war
+```
+```bash
+curl -X POST http://127.0.0.1:8080/wfpredict/wf -T test.txt
 ```
 ### Website skeleton
 Before startup you have to create venv
@@ -81,4 +87,9 @@ $ . venv/bin/activate
 And install dependencies
 ```bash
 $ (venv) pip install Flask torch
+```
+
+Than the app can be run with command
+```bash
+python project-nlp/*/app.py
 ```
