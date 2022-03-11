@@ -91,5 +91,5 @@ $ (venv) pip install Flask torch
 
 Than the app can be run with command
 ```bash
-python project-nlp/*/app.py
+python project-nlp/chatbot-deployment/app.py
 ```
