@@ -3,3 +3,4 @@ sentencepiece
 torch
 torchserve
 torch-model-archiver
+torch-workflow-archiver
