@@ -49,18 +49,16 @@ class ConversationHandler(BaseHandler, ABC):
         # if not isinstance(data[0], str):
         #     raise ValueError("Invalid input data type")
         # return self.tokenizer.encode(data[0] + self.tokenizer.eos_token, return_tensors='pt').to(self.device)
-        logger.info(f"Data is of type {type(data)}, data[0]: {data[0]}")
         text = data[0].get("data")
         if text is None:
             text = data[0].get("body")
         sentences = text.decode('utf-8')
-        logger.info("Received text: '%s'", sentences)
+        logger.info(f"Received text is of type {type(sentences)}, sentence: {sentences}")
 
         inputs = self.tokenizer.encode(
             sentences + self.tokenizer.eos_token,
             return_tensors="pt"
         )
-        logger.info(f"Encoded input: {inputs}")
         return inputs
 
     def inference(self, data, *args, **kwargs):

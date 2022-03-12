@@ -49,7 +49,6 @@ class TranslationHandler(BaseHandler, ABC):
         self.initialized = True
 
     def preprocess(self, data):
-        logger.info(f"Data is of type {type(data)}, data[0]: {data[0]}")
         text = data[0].get("data")
         if text is None:
             text = data[0].get("body")
@@ -57,18 +56,16 @@ class TranslationHandler(BaseHandler, ABC):
         logger.info(f"Received text is of type {type(sentences)}, sentence: {sentences}")
 
         inputs = self.tokenizer([sentences+self.tokenizer.eos_token], return_tensors="pt")
-        logger.info(f"Encoded input is of type {type(inputs)}, input: {inputs}")
         return inputs
 
     def inference(self, input_batch):
         input_batch.to(self.device)
-        logging.info(f"Input to model is of type {type(input_batch)}, input: {input_batch}")
         output = self.model.generate(input_ids=input_batch['input_ids'], attention_mask=input_batch['attention_mask'])
         return output
 
     def postprocess(self, inference_output):
         translated = self.tokenizer.batch_decode(inference_output, skip_special_tokens=True)
-        logger.info(f"Translated sentence is of type {type(translated)}, translated: {translated}")
+        logger.info(f"Translated text is of type {type(translated)}, translated: {translated}")
         return translated
 
     def handle(self, data, context):
