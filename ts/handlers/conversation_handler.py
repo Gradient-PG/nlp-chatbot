@@ -72,7 +72,7 @@ class ConversationHandler(BaseHandler, ABC):
             torch tensor
         """
         out = self.model.generate(data.to(self.device), pad_token_id=self.tokenizer.eos_token_id)
-        logger.info(f"Model output is of type {type(out)}")
+        logger.info(f"Model output is of type {type(out)}, output: {out}")
         return self.tokenizer.decode(out[:, data.shape[-1]:][0], skip_special_tokens=True)
     
     def postprocess(self, data):
