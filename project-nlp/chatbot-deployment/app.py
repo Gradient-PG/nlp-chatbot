@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import requests
 
 def get_response(text):
-    return requests.post("https://localhost:8443/wfpredict/wf", text).text
+    return requests.post("https://localhost:8443/wfpredict/wf", text.encode("utf-8")).text
 
 
 app = Flask(__name__)
