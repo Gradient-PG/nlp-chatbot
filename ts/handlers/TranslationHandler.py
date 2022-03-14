@@ -7,6 +7,8 @@ from abc import ABC
 from ts.torch_handler.base_handler import BaseHandler
 from transformers import AutoTokenizer, AutoModel, MarianMTModel, MarianTokenizer
 
+import time
+
 logger = logging.getLogger(__name__)
 
 
@@ -15,6 +17,8 @@ class TranslationHandler(BaseHandler, ABC):
     def __init__(self):
         super(TranslationHandler, self).__init__()
         self.initialized = False
+        self.start_time = 0.0
+        self.end_time = 0.0
 
     def initialize(self, ctx):
         self.manifest = ctx.manifest
@@ -49,13 +53,14 @@ class TranslationHandler(BaseHandler, ABC):
         self.initialized = True
 
     def preprocess(self, data):
+        self.start_time = time.perf_counter()
         text = data[0].get("data")
         if text is None:
             text = data[0].get("body")
         sentences = text.decode('utf-8')
         logger.info(f"Received text is of type {type(sentences)}, sentence: {sentences}")
 
-        inputs = self.tokenizer([sentences+self.tokenizer.eos_token], return_tensors="pt")
+        inputs = self.tokenizer([sentences + self.tokenizer.eos_token], return_tensors="pt")
         return inputs
 
     def inference(self, input_batch):
@@ -65,6 +70,8 @@ class TranslationHandler(BaseHandler, ABC):
 
     def postprocess(self, inference_output):
         translated = self.tokenizer.batch_decode(inference_output, skip_special_tokens=True)
+        self.end_time = time.perf_counter()
+        logger.info(f"TIME ELAPSED {self.start_time - self.end_time:0.4f} SECONDS")
         logger.info(f"Translated text is of type {type(translated)}, translated: {translated}")
         return translated
 

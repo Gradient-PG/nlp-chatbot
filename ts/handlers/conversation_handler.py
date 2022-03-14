@@ -6,14 +6,20 @@ import types
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 from ts.torch_handler.base_handler import BaseHandler
+import time
 
 logger = logging.getLogger(__name__)
 
+
 class ConversationHandler(BaseHandler, ABC):
     "Custom handler for conversational transformer models from HuggingFace"
+
     def __init__(self):
         super(ConversationHandler, self).__init__()
         self.initialized = False
+        self.start_time = 0.0
+        self.end_time = 0.0
+
     def initialize(self, context):
         self.manifest = context.manifest
         properties = context.system_properties
@@ -38,6 +44,7 @@ class ConversationHandler(BaseHandler, ABC):
         )
 
         self.initialized = True
+
     def preprocess(self, data):
         """
         This functions tokenizes input data
@@ -46,6 +53,7 @@ class ConversationHandler(BaseHandler, ABC):
         Returns:
             torch tensor
         """
+        self.start_time = time.perf_counter()
         # if not isinstance(data[0], str):
         #     raise ValueError("Invalid input data type")
         # return self.tokenizer.encode(data[0] + self.tokenizer.eos_token, return_tensors='pt').to(self.device)
@@ -72,7 +80,7 @@ class ConversationHandler(BaseHandler, ABC):
         out = self.model.generate(data.to(self.device), pad_token_id=self.tokenizer.eos_token_id)
         logger.info(f"Model output is of type {type(out)}, output: {out}")
         return self.tokenizer.decode(out[:, data.shape[-1]:][0], skip_special_tokens=True)
-    
+
     def postprocess(self, data):
         """
         This function wraps a string into a list
@@ -80,10 +88,13 @@ class ConversationHandler(BaseHandler, ABC):
             data - detokenized output of the model as string
         Returns:
             list of string"""
+        self.end_time = time.perf_counter()
+        logger.info(f"TIME ELAPSED {self.start_time - self.end_time:0.4f} SECONDS")
         return [data]
 
     def handle(self, data, context):
         return super().handle(data, context)
-        
+
+
 if __name__ == '__main__':
     handler = ConversationHandler()
