@@ -71,7 +71,7 @@ class TranslationHandler(BaseHandler, ABC):
     def postprocess(self, inference_output):
         translated = self.tokenizer.batch_decode(inference_output, skip_special_tokens=True)
         self.end_time = time.perf_counter()
-        logger.info(f"TIME ELAPSED {self.start_time - self.end_time:0.4f} SECONDS")
+        logger.info(f"TIME ELAPSED {self.end_time - self.start_time:0.4f} SECONDS")
         logger.info(f"Translated text is of type {type(translated)}, translated: {translated}")
         return translated
 

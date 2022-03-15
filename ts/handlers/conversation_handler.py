@@ -89,7 +89,7 @@ class ConversationHandler(BaseHandler, ABC):
             list of string"""
         self.end_time = time.perf_counter()
         logger.info(f"Model output is of type {type(data)}, output: {data}")
-        logger.info(f"TIME ELAPSED {self.start_time - self.end_time:0.4f} SECONDS")
+        logger.info(f"TIME ELAPSED {self.end_time - self.start_time:0.4f} SECONDS")
         return [data]
 
     def handle(self, data, context):
