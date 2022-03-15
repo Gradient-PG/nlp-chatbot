@@ -39,6 +39,10 @@ To pack model gsarti run:
 ```bash
 torch-model-archiver --model-name gsarti --version 1.0 --serialized-file models/gsarti/pytorch_model.bin --handler handlers/TranslationHandler.py --extra-files 'models/gsarti/config.json,./models/gsarti/vocab.json,models/gsarti/tokenizer_config.json,models/gsarti/special_tokens_map.json,./handlers/setup_config.json,models/gsarti/source.spm,models/gsarti/target.spm' --export-path model-store -f
 ```
+To pack model blenderbot-90M run:
+```bash
+torch-model-archiver --model-name blenderbot-90M --version 1.0 --serialized-file models/blenderbot-90M/pytorch_model.bin --handler handlers/blenderbot_handler.py --extra-files 'models/blenderbot-90M/config.json,./models/blenderbot-90M/vocab.json,models/blenderbot-90M/tokenizer_config.json,models/blenderbot-90M/special_tokens_map.json,models/blenderbot-90M/merges.txt' --export-path ./model-store -f
+```
 When you have your model packed in an archive, you can start torchserve. Command below starts model DialoGPT-medium:
 
 ```bash
