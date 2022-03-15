@@ -5,7 +5,7 @@ models:
     batch-size: 1
     max-batch-delay : 5000
     retry-attempts : 3
-    timeout-ms : 5000
+    timeout-ms : 20000
     DialoGPT-medium:
        url : model-store/DialoGPT-medium.mar #local or public URI
       #  min-workers: 1   #override the global params
