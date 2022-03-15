@@ -1,2 +1,0 @@
-transformers==4.11.3
-sentencepiece
