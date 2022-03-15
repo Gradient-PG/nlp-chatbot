@@ -58,7 +58,7 @@ class TranslationHandler(BaseHandler, ABC):
         if text is None:
             text = data[0].get("body")
         sentences = text.decode('utf-8')
-        logger.info(f"Received text is of type {type(sentences)}, sentence: {sentences}")
+        logger.info(f"Received text is of type {type(text)}, sentence: {text}")
 
         inputs = self.tokenizer([sentences + self.tokenizer.eos_token], return_tensors="pt")
         return inputs
