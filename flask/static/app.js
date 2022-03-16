@@ -45,6 +45,8 @@ class Chatbox {
 
         let msg1 = { name: "User", message: text1 }
         this.messages.push(msg1);
+        this.updateChatText(chatbox)
+        textField.value = ''
 
         fetch('http://galileo.eti.pg.gda.pl:5000/predict', {
             method: 'POST',
