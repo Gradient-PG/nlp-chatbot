@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, jsonify
-# from flask_cors import CORS
 import requests
 import unidecode
 
@@ -8,7 +7,6 @@ def get_response(text):
 
 
 app = Flask(__name__)
-# CORS(app)
 
 @app.route("/", methods =["GET"])
 def index_get():
