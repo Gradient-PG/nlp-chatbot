@@ -1,4 +1,7 @@
 torch==1.10.2
-torchserve
+transformers==4.11.3
+sentencepiece==0.1.95
 torch-model-archiver
 torch-workflow-archiver
+Flask
+torchserve
