@@ -39,7 +39,7 @@ torch-model-archiver --model-name gsarti --version 1.0 --serialized-file ts/mode
 ```
 To pack model blenderbot-90M run:
 ```bash
-torch-model-archiver --model-name blenderbot-90M --version 1.0 --serialized-file models/blenderbot-90M/pytorch_model.bin --handler handlers/blenderbot_handler.py --extra-files 'models/blenderbot-90M/config.json,./models/blenderbot-90M/vocab.json,models/blenderbot-90M/tokenizer_config.json,models/blenderbot-90M/special_tokens_map.json,models/blenderbot-90M/merges.txt' --export-path ./model-store -f --requirements-file ts/requirements-docker.txt
+torch-model-archiver --model-name blenderbot-90M --version 1.0 --serialized-file ts/models/blenderbot-90M/pytorch_model.bin --handler ts/handlers/blenderbot_handler.py --extra-files 'ts/models/blenderbot-90M/config.json,ts/models/blenderbot-90M/vocab.json,ts/models/blenderbot-90M/tokenizer_config.json,ts/models/blenderbot-90M/special_tokens_map.json,ts/models/blenderbot-90M/merges.txt' --export-path ts/model-store -f --requirements-file ts/requirements-docker.txt
 ```
 DialoGPT-medium model can be switched for a smaller model DialoGPT-small, but the smaller model is not downloaded automatically.
 ```bash
