@@ -1,7 +1,7 @@
 class Chatbox {
     constructor() {
         this.args = {
-            openButton: document.querySelector('.chatbox__button'),
+            // openButton: document.querySelector('.chatbox__button'),
             chatBox: document.querySelector('.chatbox__support'),
             sendButton: document.querySelector('.send__button')
         }
@@ -13,7 +13,7 @@ class Chatbox {
     display() {
         const {openButton, chatBox, sendButton} = this.args;
 
-        openButton.addEventListener('click', () => this.toggleState(chatBox))
+        // openButton.addEventListener('click', () => this.toggleState(chatBox))
 
         sendButton.addEventListener('click', () => this.onSendButton(chatBox))
 
