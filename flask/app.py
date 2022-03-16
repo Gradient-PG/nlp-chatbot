@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import requests
+import unidecode
 
 def get_response(text):
-    return requests.post("http://localhost:8080/wfpredict/wf", text.encode("utf-8")).text
+    return requests.post("http://localhost:8080/wfpredict/wf", unidecode.unidecode(text)).text
     # return "answer"
 
 
