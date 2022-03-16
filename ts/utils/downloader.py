@@ -1,4 +1,3 @@
-from numpy import dtype
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig, MarianMTModel, MarianTokenizer, MarianConfig
 from transformers import BlenderbotSmallForConditionalGeneration, BlenderbotConfig, BlenderbotSmallTokenizer
 from pathlib import Path
