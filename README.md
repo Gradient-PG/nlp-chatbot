@@ -5,96 +5,95 @@ Our AI pipeline consists of transformer models from [HuggingFace](https://huggin
 
 We use [torchserve](https://github.com/pytorch/serve) to deploy our model on a server.
 
-To install required packages run:
-```python
+## Running GradientBot
+
+GradientBot is meant to be run inside docker container. Follow the next few steps to have your own bot instance up and running.  
+First of all, you need to create yourself a virtual environment and install required packages.
+
+```bash
+python3 -m venv venv
+source ./venv/bin/activate
 pip install -r requirements.txt
 ```
+### Models
 
-Once you have your packages installed you need to download and save your model. This can be done with custom downloading scripts. From the root directory of the project run:
+Once you have all the packages installed you need to download models used in the pipeline. This can be done with our downloading script. From the root directory of the project run:
 ```python
-python ts/utils/transformer_downloader.py
-python ts/utils/translation_transformer_downloader.py
-python ts/utils/translation_transformer_downloader.py
+python ts/utils/downloader.py
 ```
-With the models downloaded you can create a MAR archive. First create model-store directory and than you can compress already downloaded model DialoGPT-medium:
+With the models downloaded you need to create MAR archives for every model. Inside `ts` directory create `model-store` directory and run the model archiver:
 ```bash
-mkdir model-store
+mkdir ts/model-store
 ```
+To pack model DialoGPT-medium run:
 ```bash
-torch-model-archiver --model-name DialoGPT-medium --version 1.0 --serialized-file models/DialoGPT-medium/pytorch_model.bin --handler handlers/conversation_handler.py --extra-files 'models/DialoGPT-medium/config.json,./models/DialoGPT-medium/vocab.json,./models/DialoGPT-medium/tokenizer.json,models/DialoGPT-medium/tokenizer_config.json,models/DialoGPT-medium/special_tokens_map.json' --export-path ./model-store -f 
+torch-model-archiver --model-name DialoGPT-medium --version 1.0 --serialized-file ts/models/DialoGPT-medium/pytorch_model.bin --handler ts/handlers/conversation_handler.py --extra-files 'ts/models/DialoGPT-medium/config.json,ts/models/DialoGPT-medium/vocab.json,ts/models/DialoGPT-medium/tokenizer.json,ts/models/DialoGPT-medium/tokenizer_config.json,ts/models/DialoGPT-medium/special_tokens_map.json' --export-path ts/model-store -f --requirements-file ts/requirements-docker.txt
 ```
-```bash
-torch-model-archiver --model-name DialoGPT-small --version 1.0 --serialized-file models/DialoGPT-small/pytorch_model.bin --handler handlers/conversation_handler.py --extra-files 'models/DialoGPT-small/config.json,./models/DialoGPT-small/vocab.json,./models/DialoGPT-small/tokenizer.json,models/DialoGPT-small/tokenizer_config.json,models/DialoGPT-small/special_tokens_map.json' --export-path ./model-store -f
-```
-If your model needs some additional requirements at the end of the command add:
-```bash
---requirements-file ../requirements-docker.txt
-```
-
 To pack model Helsinki-NLP run:
 ```bash
-torch-model-archiver --model-name Helsinki-NLP --version 1.0 --serialized-file models/Helsinki-NLP/pytorch_model.bin --handler handlers/TranslationHandler.py --extra-files 'models/Helsinki-NLP/config.json,./models/Helsinki-NLP/vocab.json,models/Helsinki-NLP/tokenizer_config.json,models/Helsinki-NLP/special_tokens_map.json,./handlers/setup_config.json,models/Helsinki-NLP/source.spm,models/Helsinki-NLP/target.spm' --export-path model-store -f
+torch-model-archiver --model-name Helsinki-NLP --version 1.0 --serialized-file ts/models/Helsinki-NLP/pytorch_model.bin --handler ts/handlers/TranslationHandler.py --extra-files 'ts/models/Helsinki-NLP/config.json,ts/models/Helsinki-NLP/vocab.json,ts/models/Helsinki-NLP/tokenizer_config.json,ts/models/Helsinki-NLP/special_tokens_map.json,ts/handlers/setup_config.json,ts/models/Helsinki-NLP/source.spm,ts/models/Helsinki-NLP/target.spm' --export-path ts/model-store -f --requirements-file ts/requirements-docker.txt
 ```
 To pack model gsarti run:
 ```bash
-torch-model-archiver --model-name gsarti --version 1.0 --serialized-file models/gsarti/pytorch_model.bin --handler handlers/TranslationHandler.py --extra-files 'models/gsarti/config.json,./models/gsarti/vocab.json,models/gsarti/tokenizer_config.json,models/gsarti/special_tokens_map.json,./handlers/setup_config.json,models/gsarti/source.spm,models/gsarti/target.spm' --export-path model-store -f
+torch-model-archiver --model-name gsarti --version 1.0 --serialized-file ts/models/gsarti/pytorch_model.bin --handler ts/handlers/TranslationHandler.py --extra-files 'ts/models/gsarti/config.json,ts/models/gsarti/vocab.json,ts/models/gsarti/tokenizer_config.json,ts/models/gsarti/special_tokens_map.json,ts/handlers/setup_config.json,ts/models/gsarti/source.spm,ts/models/gsarti/target.spm' --export-path ts/model-store -f --requirements-file ts/requirements-docker.txt
 ```
 To pack model blenderbot-90M run:
 ```bash
-torch-model-archiver --model-name blenderbot-90M --version 1.0 --serialized-file models/blenderbot-90M/pytorch_model.bin --handler handlers/blenderbot_handler.py --extra-files 'models/blenderbot-90M/config.json,./models/blenderbot-90M/vocab.json,models/blenderbot-90M/tokenizer_config.json,models/blenderbot-90M/special_tokens_map.json,models/blenderbot-90M/merges.txt' --export-path ./model-store -f
+torch-model-archiver --model-name blenderbot-90M --version 1.0 --serialized-file models/blenderbot-90M/pytorch_model.bin --handler handlers/blenderbot_handler.py --extra-files 'models/blenderbot-90M/config.json,./models/blenderbot-90M/vocab.json,models/blenderbot-90M/tokenizer_config.json,models/blenderbot-90M/special_tokens_map.json,models/blenderbot-90M/merges.txt' --export-path ./model-store -f --requirements-file ts/requirements-docker.txt
 ```
-When you have your model packed in an archive, you can start torchserve. Command below starts model DialoGPT-medium:
+DialoGPT-medium model can be switched for a smaller model DialoGPT-small, but the smaller model is not downloaded automatically.
+```bash
+torch-model-archiver --model-name DialoGPT-small --version 1.0 --serialized-file ts/models/DialoGPT-small/pytorch_model.bin --handler ts/handlers/conversation_handler.py --extra-files 'ts/models/DialoGPT-small/config.json,ts/models/DialoGPT-small/vocab.json,ts/models/DialoGPT-small/tokenizer.json,ts/models/DialoGPT-small/tokenizer_config.json,ts/models/DialoGPT-small/special_tokens_map.json' --export-path ts/model-store -f --requirements-file ts/requirements-docker.txt
+```
+The next step is to combine our three models in a workflow archive.
 
-```bash
-torchserve --start --model-store model-store --models DialoGPT-medium=DialoGPT-medium.mar
-```
-If everything went right your model is now available at port 8080.
-You can query it from separate terminal with command:
-```bash
-curl -X POST http://127.0.0.1:8080/predictions/DialoGPT-medium -T test.txt
-```
-The test.txt file contains one simple question.
-
-If you want to stop torchserve run:
-```bash
-torchserve --stop
-```
 ### Workflows
 
-In order to create workflow which runs a few different models you need to create a .war archive. Custom workflows require .yaml config file that states how the models interact.
-
-When you have your configs ready and all models are downloaded, create wf-store directory:
+In order to create workflow which runs a few different models you need to create a `.war` archive. Custom workflows require `.yaml` config file that states how the models interact.
+When you have your configs ready and all models are downloaded and packed, create `wf-store` directory:
 ```bash
-mkdir wf-store
+mkdir ts/wf-store
 ```
 Than run:
 ```bash
-torch-workflow-archiver --workflow-name wf --spec-file workflow.yaml --handler handlers/workflow_handler.py --export-path wf-store -f
+torch-workflow-archiver --workflow-name wf --spec-file ts/workflow.yaml --handler ts/handlers/workflow_handler.py --export-path ts/wf-store -f
 ```
-Torchserve can be now started with command:
+### Docker
+
+Now everything is ready to start the chatbot in docker.* 
+Because the bot runs in one container and our web application runs in another, we use docker-compose to start the containers. Run:
 ```bash
-torchserve --start --model-store model-store --workflow-store wf-store --ts-config ../config/config.properties --ncs
+docker-compose up
 ```
+This should start the web application which you can check at http://localhost:5000/. This should also start the model pipeline, which needs to be registered before first use. To register it use curl:
 ```bash
 curl -X POST http://127.0.0.1:8081/workflows?url=wf.war
 ```
+After few moments the bot should be fully functional.
+
+*By default the bot has hardcoded url address of galileo server inside javascript, so before running docker-compose this url should be changed to 127.0.0.1
+
+## Running without docker
+
+Running without docker requires some additional dependencies which are specified inside requirements-dev.txt file.
+```bash
+pip install -r requirements-dev.txt
+```
+Model server can be run without docker with command:
+```bash
+torchserve --start --model-store ts/model-store --workflow-store ts/wf-store --ts-config ts/config.properties --ncs
+```
+Register the workflow:
+```bash
+curl -X POST http://127.0.0.1:8081/workflows?url=wf.war
+```
+And now you can query it from the commandline:
 ```bash
 curl -X POST http://127.0.0.1:8080/wfpredict/wf -T test.txt
 ```
-### Website skeleton
-Before startup you have to create venv
-```bash
-$ cd chatbot-deployment
-$ python3 -m venv venv
-$ . venv/bin/activate
-```
-And install dependencies
-```bash
-$ (venv) pip install Flask torch
-```
+### Website 
 
-Than the app can be run with command
+The web app can be run with:
 ```bash
-python project-nlp/chatbot-deployment/app.py
+python flask/app.py
 ```
-:)

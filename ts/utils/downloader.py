@@ -5,7 +5,7 @@ import torch
 import os
 
 if __name__ == "__main__":
-    models = ["DialoGPT-small", "Helsinki-NLP", "gsarti"]
+    models = ["DialoGPT-medium", "Helsinki-NLP", "gsarti"]
     modelpaths = [Path("ts/models/" + models[i]) for i, _ in enumerate(models)]
 
     for i, val in enumerate(models):
@@ -31,4 +31,3 @@ if __name__ == "__main__":
             print (f"Successfully created directory {modelpaths[i].as_posix()} ")
             model.save_pretrained(modelpaths[i].as_posix())
             tokenizer.save_pretrained(modelpaths[i].as_posix())
-        # , dtype=torch.float16
